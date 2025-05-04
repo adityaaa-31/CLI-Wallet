@@ -39,30 +39,22 @@ public class WalletCLI {
         double amount = 0;
 
         System.out.print("Enter amount to top up for '" + username + "': ");
-        try {
-            String amountInput = scanner.nextLine();
-            amount = Double.parseDouble(amountInput);
+        String amountInput = scanner.nextLine();
+        amount = Double.parseDouble(amountInput);
 
-            if (amount <= 0) {
-                System.out.println("Error: Top-up amount must be positive.");
-            }
-
-        } catch (NumberFormatException e) {
-            System.out.println("Error: Invalid amount entered. Please enter a number.");
+        if (amount <= 0) {
+            System.out.println("Error: Top-up amount must be positive.");
         }
 
 
-        try {
-            Wallet userWallet = user.getWallet();
-            userWallet.setBalance(amount);
-            Transaction tx = new Transaction(TransactionType.TOPUP, amount, user.getUsername(), user.getUsername());
-            transactions.add(tx);
+        Wallet userWallet = user.getWallet();
+        userWallet.setBalance(amount);
+        Transaction tx = new Transaction(TransactionType.TOPUP, amount, user.getUsername(), user.getUsername());
+        transactions.add(tx);
 
-            System.out.println("Successfully topped up " + amount + " for '" + user.getUsername() + "'.");
-            System.out.println("New balance for '" + user.getUsername() + "': " + amount);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        System.out.println("Successfully topped up " + amount + " for '" + user.getUsername() + "'.");
+        System.out.println("New balance for '" + user.getUsername() + "': " + amount);
+
     }
 
     private static void checkBalance(Scanner scanner) {
@@ -133,6 +125,68 @@ public class WalletCLI {
         System.out.println("'" + receiverUsername + "' new balance: " + receiverUserWallet.getBalance());
     }
 
+    private static void viewGlobalHistory() {
+        System.out.println("\n--- Global Transaction History ---");
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions recorded yet.");
+            return;
+        }
+
+        for (Transaction tx : transactions) {
+            System.out.println(
+                    tx.getId() + tx.getTimestamp() +  tx.getType() +
+                   tx.getAmount());
+        }
+        System.out.println("-".repeat(100));
+    }
+
+    private static void viewUserHistory(Scanner scanner) {
+        System.out.println("\n--- User Transaction History ---");
+        System.out.print("Enter username to view history: ");
+        String username = scanner.nextLine().trim().toLowerCase();
+
+        if (!users.containsKey(username)) {
+            System.out.println("Error: User '" + username + "' not found.");
+            return;
+        }
+
+        List<Transaction> userTransactions = new ArrayList<>();
+        for (Transaction tx : transactions) {
+            if (tx.getType() == TransactionType.TOPUP && tx.getSender().equals(username)) {
+                userTransactions.add(tx);
+            } else if (tx.getType() == TransactionType.TRANSFER) {
+                if (tx.getSender().equals(username) || tx.getReceiver().equals(username)) {
+                    userTransactions.add(tx);
+                }
+            }
+        }
+
+        if (userTransactions.isEmpty()) {
+            System.out.println("No transactions found involving user '" + username + "'.");
+            return;
+        }
+
+        System.out.println("\n--- Transaction History for '" + username + "' ---");
+        System.out.printf("ID", "Timestamp", "Type", "Amount", "Details");
+        for (Transaction tx : userTransactions) {
+            String details = "";
+            String sign = "";
+            if (tx.getType() == TransactionType.TOPUP) {
+                details = "Top-up Received"; sign = "+";
+            } else if (tx.getType() == TransactionType.TRANSFER) {
+                if (tx.getSender().equals(username)) {
+                    details = "Sent to: " + tx.getReceiver(); sign = "-";
+                } else {
+                    details = "Received from: " + tx.getSender(); sign = "+";
+                }
+            }
+            System.out.printf("%-38s | %-20s | %-10s | %s%-11s | %s%n",
+                    tx.getId(), tx.getTimestamp(), tx.getType(),
+                    sign, tx.getAmount(), details);
+        }
+        System.out.println("-".repeat(100));
+    }
+
     private static void displayMenu() {
         System.out.println("\n===== Wallet CLI =====");
         System.out.println("1. Register a user");
@@ -156,8 +210,8 @@ public class WalletCLI {
                     case "2": topUp(scanner); break;
                     case "3": checkBalance(scanner); break;
                     case "4": transferMoney(scanner); break;
-//                    case "5": viewGlobalHistory(); break;
-//                    case "6": viewUserHistory(scanner); break;
+                    case "5": viewGlobalHistory(); break;
+                    case "6": viewUserHistory(scanner); break;
                     case "7": System.out.println("Exiting!"); return;
                     default: System.out.println("Invalid choice. Please enter a number between 1 and 7."); break;
                 }
