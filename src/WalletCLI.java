@@ -169,9 +169,13 @@ public class WalletCLI {
 
         System.out.println("\n--- Transaction History for '" + username + "' ---");
         System.out.println("ID" + "\t" + "Timestamp" + "\t" + "Type" + "\t" + "Amount");
-           System.out.println(
+
+        for(Transaction tx: userTransactions) {
+            System.out.println(
                     tx.getId() + "\t" + tx.getTimestamp() + "\t" +  tx.getType() + "\t" +
                             tx.getAmount());
+        }
+
     }
 
     private static void displayMenu() {
