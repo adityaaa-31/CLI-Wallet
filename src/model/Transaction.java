@@ -1,10 +1,7 @@
+package model;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-enum TransactionType {
-    TOPUP,
-    TRANSFER
-}
 
 public class Transaction {
     private final String id;

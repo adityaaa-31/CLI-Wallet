@@ -1,3 +1,4 @@
+package model;
 
 public class Wallet {
     private double balance;

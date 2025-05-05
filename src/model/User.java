@@ -1,3 +1,5 @@
+package model;
+
 public class User {
     private final String username;
     private Wallet wallet;
