@@ -132,9 +132,10 @@ public class WalletCLI {
             return;
         }
 
+        System.out.println("ID" + "\t" + "Timestamp" + "\t" + "Type" + "\t" + "Amount");
         for (Transaction tx : transactions) {
-            System.out.println(
-                    tx.getId() + tx.getTimestamp() +  tx.getType() +
+         System.out.println(
+                    tx.getId() + "\t" + tx.getTimestamp() + "\t" +  tx.getType() + "\t" +
                    tx.getAmount());
         }
         System.out.println("-".repeat(100));
@@ -167,22 +168,10 @@ public class WalletCLI {
         }
 
         System.out.println("\n--- Transaction History for '" + username + "' ---");
-        System.out.printf("ID", "Timestamp", "Type", "Amount", "Details");
-        for (Transaction tx : userTransactions) {
-            String details = "";
-            String sign = "";
-            if (tx.getType() == TransactionType.TOPUP) {
-                details = "Top-up Received"; sign = "+";
-            } else if (tx.getType() == TransactionType.TRANSFER) {
-                if (tx.getSender().equals(username)) {
-                    details = "Sent to: " + tx.getReceiver(); sign = "-";
-                } else {
-                    details = "Received from: " + tx.getSender(); sign = "+";
-                }
-            }
-            System.out.printf("%-38s | %-20s | %-10s | %s%-11s | %s%n",
-                    tx.getId(), tx.getTimestamp(), tx.getType(),
-                    sign, tx.getAmount(), details);
+        System.out.println("ID" + "\t" + "Timestamp" + "\t" + "Type" + "\t" + "Amount");
+           System.out.println(
+                    tx.getId() + "\t" + tx.getTimestamp() + "\t" +  tx.getType() + "\t" +
+                            tx.getAmount());
         }
         System.out.println("-".repeat(100));
     }
