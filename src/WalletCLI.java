@@ -172,8 +172,6 @@ public class WalletCLI {
            System.out.println(
                     tx.getId() + "\t" + tx.getTimestamp() + "\t" +  tx.getType() + "\t" +
                             tx.getAmount());
-        }
-        System.out.println("-".repeat(100));
     }
 
     private static void displayMenu() {
